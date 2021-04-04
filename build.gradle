@@ -1,1 +1,1 @@
-task stage(dependsOn: ['build', 'clean'])
+task stage()

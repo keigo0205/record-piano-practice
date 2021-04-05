@@ -16,6 +16,7 @@ from __future__ import unicode_literals
 
 import os
 import sys
+import psycopg2
 from argparse import ArgumentParser
 
 from flask import Flask, request, abort

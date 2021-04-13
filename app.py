@@ -79,7 +79,6 @@ if __name__ == "__main__":
     DATABASE_URL = os.environ['DATABASE_URL']
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
-
     arg_parser = ArgumentParser(
         usage='Usage: python ' + __file__ + ' [--port <port>] [--help]'
     )
@@ -89,4 +88,3 @@ if __name__ == "__main__":
     options = arg_parser.parse_args()
 
     app.run(debug=options.debug, host=options.host, port=options.port)
-    

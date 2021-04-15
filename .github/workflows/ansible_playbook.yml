@@ -15,9 +15,12 @@ jobs:
       - name: Run ansible playbook
         env:
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          PORT: ${{ secrets.Heroku_DB_PORT }}
+          HOST: ${{ secrets.Heroku_DB_HOST }}
         run: |
           mkdir -p ~/.ssh
           echo "$PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 700 ~/.ssh/id_rsa
           eval $(ssh-agent -s)
-          ssh-add ~/.ssh/id_rsa
+          ssh-add ~/.ssh/id_rsa]
+          ssh-keyscan -p $PORT -H "$HOST" >> ~/.ssh/known_hosts

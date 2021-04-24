@@ -71,6 +71,10 @@ def callback():
             event.reply_token,
             TextSendMessage(text="11")
         )
+        line_bot_api.reply_message(
+            event.source.userID,
+            TextSendMessage(text="22")
+        )
 
     return 'OK'
 

@@ -66,7 +66,7 @@ def callback():
             continue
         if not isinstance(event.message, TextMessage):
             continue
-        app.logger.info(str(direvent.source))
+        app.logger.info(str(event.source))
 
         line_bot_api.reply_message(
             event.reply_token,

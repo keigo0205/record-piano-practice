@@ -30,6 +30,7 @@ from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage,
 )
 
+
 app = Flask(__name__)
 
 # get channel_secret and channel_access_token from your environment variable
@@ -66,7 +67,7 @@ def callback():
             continue
         if not isinstance(event.message, TextMessage):
             continue
-        app.logger.info(str(event.source))
+        app.logger.info(str(dir(event.source)))
 
         line_bot_api.reply_message(
             event.reply_token,

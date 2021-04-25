@@ -21,7 +21,7 @@ from argparse import ArgumentParser
 
 from flask import Flask, request, abort
 from linebot import (
-    LineBotApi, WebhookParser
+    LineBotApi, WebhookParser, WebhookHandler
 )
 from linebot.exceptions import (
     InvalidSignatureError

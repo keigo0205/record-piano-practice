@@ -86,6 +86,18 @@ def updatePracticeData(user_id, text):
     return
 
 
+def deletePracticeData(user_id, text):
+    sql = """
+    DELETE FROM %s
+    WHERE user_id = '%s' and message = '%s'
+    """ % (DB_NAME, user_id, text)
+    with get_connection() as conn:
+        conn.autocommit = True
+        with conn.cursor() as cur:
+            cur.execute(sql)
+    return
+
+
 def getListMessage(user_id, text):
     sql = 'select * from ' + DB_NAME + ' where user_id = %(target_id)s'
     with get_connection() as conn:
@@ -134,13 +146,24 @@ def callback():
 def handle_message(event):
     user_id = event.source.user_id
     text = event.message.text
-    if event.message.text in ["リスト", "list"]:
+    if text in ["リスト", "list"]:
         list_message = getListMessage(user_id, text)
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=list_message)
         )
         return 'OK'
+    elif len(text) > 3 and text[:4] == "del ":
+        message = text[4:]
+        if countPracticeData(user_id, text) == 0:
+            ret_message = "データがありません。"
+        else:
+            deletePracticeData(user_id, message)
+            ret_message = "データを消去しました。"
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=ret_message)
+        )
 
     is_data = countPracticeData(user_id, text) > 0
     if is_data is True:

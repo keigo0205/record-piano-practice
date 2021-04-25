@@ -46,13 +46,12 @@ if channel_access_token is None:
 line_bot_api = LineBotApi(channel_access_token)
 parser = WebhookParser(channel_secret)
 
-
 DATABASE_URL = os.environ['DATABASE_URL']
-
-connection = psycopg2.connect(DATABASE_URL, sslmode='require')
-# cursor = connection.cursor()
-
 DB_NAME = "test_table"
+
+
+def get_connection():
+    return psycopg2.connect(DATABASE_URL, sslmode='require')
 
 
 @app.route("/callback", methods=['POST'])

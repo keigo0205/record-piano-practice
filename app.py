@@ -151,7 +151,7 @@ def handle_message(event):
 
     elif len(text) > 3 and text[:4] == "del ":
         message = text[4:]
-        if countPracticeData(user_id, text) == 0:
+        if countPracticeData(user_id, message) == 0:
             ret_message = "データがありません。"
         else:
             deletePracticeData(user_id, message)

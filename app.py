@@ -141,8 +141,6 @@ def handle_message(event):
         )
         return 'OK'
 
-    user_id = event.source.user_id
-    text = event.message.text
     is_data = countPracticeData(user_id, text) > 0
     if is_data is True:
         updatePracticeData(user_id, text)

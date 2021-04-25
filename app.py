@@ -47,6 +47,14 @@ line_bot_api = LineBotApi(channel_access_token)
 parser = WebhookParser(channel_secret)
 
 
+DATABASE_URL = os.environ['DATABASE_URL']
+
+conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+cursor = connection.cursor()
+
+DB_NAME = "test_table"
+
+
 @app.route("/callback", methods=['POST'])
 def callback():
     signature = request.headers['X-Line-Signature']
@@ -68,14 +76,18 @@ def callback():
         if not isinstance(event.message, TextMessage):
             continue
 
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text="11")
-        )
-        line_bot_api.push_message(
-            event.source.user_id,
-            TextSendMessage(text="22")
-        )
+        if event.message.text in ["リスト", "list"]:
+            sql = 'select * from ' + DB_NAME + ' where id = %(target_id)s'
+            cursor.execute(sql, {'target_id': (event.source.user_id,)})
+            results = cursor.fetchall()
+            print(results)
+        else:
+            sql = "INSERT INTO " + DB_NAME + " VALUES (" + event.source.user_id + "," + event.message.text + ")"
+            cursor.execute(sql)
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text="登録しました")
+            )
 
     return 'OK'
 

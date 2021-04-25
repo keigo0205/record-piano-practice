@@ -85,10 +85,11 @@ def callback():
                 _, piece, time = result
                 ans += piece + " を最後に練習したのは\n"
                 ans += str(time) + " です。\n\n"
-                line_bot_api.reply_message(
-                    event.reply_token,
-                    TextSendMessage(text=ans)
-                )
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=ans)
+            )
 
         else:
             print(event.source.user_id)

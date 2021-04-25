@@ -60,7 +60,27 @@ def countPracticeData(user_id, text):
         with conn.cursor() as cur:
             cur.execute(sql)
             results = cur.fetchall()
-    print(results)
+    return results[0][0]
+
+
+def insertPracticeData(user_id, text):
+    sql = "INSERT INTO " + DB_NAME + " VALUES ('" + user_id + "','" + text + "',current_timestamp)"
+    with get_connection() as conn:
+        conn.autocommit = True
+        with conn.cursor() as cur:
+            cur.execute(sql)
+    return
+
+
+def updatePracticeData(user_id, text):
+    sql = """
+    UPDATE %s SET last_practice_date = current_timestamp
+    WHERE user_id = %s and message = %s
+    """ % (DB_NAME, user_id, text)
+    with get_connection() as conn:
+        conn.autocommit = True
+        with conn.cursor() as cur:
+            cur.execute(sql)
     return
 
 
@@ -110,20 +130,22 @@ def callback():
                 event.reply_token,
                 TextSendMessage(text=ans)
             )
+            return
 
-        else:
-            user_id = event.source.user_id
-            text = event.message.text
-            is_data = countPracticeData(user_id, text) > 0
-            sql = "INSERT INTO " + DB_NAME + " VALUES ('" + user_id + "','" + event.message.text + "',current_timestamp)"
-            with get_connection() as conn:
-                conn.autocommit = True
-                with conn.cursor() as cur:
-                    cur.execute(sql)
-
+        user_id = event.source.user_id
+        text = event.message.text
+        is_data = countPracticeData(user_id, text) > 0
+        if is_data is True:
+            updatePracticeData(user_id, text)
             line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(text="登録しました")
+                TextSendMessage(text="時刻を更新しました。")
+            )
+        else:
+            insertPracticeData(user_id, text)
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text="登録しました。")
             )
 
     return 'OK'

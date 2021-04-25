@@ -138,8 +138,12 @@ def callback():
             continue
         if not isinstance(event.message, TextMessage):
             continue
-        else:
+
+        try:
             handler.handle(body, signature)
+        except Exception:
+            abort(400)
+    return 'OK'
 
 
 @handler.add(MessageEvent, message=TextMessage)

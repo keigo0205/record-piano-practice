@@ -52,10 +52,18 @@ DATABASE_URL = os.environ['DATABASE_URL']
 DB_NAME = "test_table"
 
 
+def logger(func):
+    def inner(*args, **kwargs):
+        print("Execute:", func.__name__)
+        return func(*args, **kwargs)
+    return inner
+
+
 def get_connection():
     return psycopg2.connect(DATABASE_URL, sslmode='require')
 
 
+@logger
 def countPracticeData(user_id, text):
     sql = "SELECT count(user_id = '" + user_id + "' and message = '" + text + "' or NULL ) from " + DB_NAME
     with get_connection() as conn:
@@ -65,6 +73,7 @@ def countPracticeData(user_id, text):
     return results[0][0]
 
 
+@logger
 def insertPracticeData(user_id, text):
     sql = "INSERT INTO " + DB_NAME + " VALUES ('" + user_id + "','" + text + "',current_timestamp)"
     with get_connection() as conn:
@@ -74,6 +83,7 @@ def insertPracticeData(user_id, text):
     return
 
 
+@logger
 def updatePracticeData(user_id, text):
     sql = """
     UPDATE %s SET last_practice_date = current_timestamp
@@ -86,6 +96,7 @@ def updatePracticeData(user_id, text):
     return
 
 
+@logger
 def deletePracticeData(user_id, text):
     sql = """
     DELETE FROM %s
@@ -98,6 +109,7 @@ def deletePracticeData(user_id, text):
     return
 
 
+@logger
 def getListMessage(user_id, text):
     sql = 'select * from ' + DB_NAME + ' where user_id = %(target_id)s'
     with get_connection() as conn:

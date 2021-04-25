@@ -3,6 +3,7 @@ import psycopg2
 import os
 from linebot import LineBotApi
 from linebot.models import TextSendMessage
+from datetime import datetime, timedelta
 
 DATABASE_URL = os.environ['DATABASE_URL']
 DB_NAME = "test_table"
@@ -33,10 +34,15 @@ if __name__ == "__main__":
 
     channel_access_token = os.getenv('LINE_CHANNEL_ACCESS_TOKEN', None)
     line_bot_api = LineBotApi(channel_access_token)
-    base_text = "あなたが最後に練習した時間は "
+    now = datetime.now()
+    base_delta = timedelta(seconds=24)
+    base_text = "最後に練習してから24時間以上経過しています。\n"
+    base_text += "最後に練習した時間は "
     for user, time in lazy_users.items():
-        line_bot_api.push_message(
-            user,
-            TextSendMessage(base_text + str(time) + "です。")
-        )
+        no_practice_time = now - time
+        if base_delta < no_practice_time:
+            line_bot_api.push_message(
+                user,
+                TextSendMessage(base_text + str(time) + "です。")
+            )
     print("Completed: warn_lazy_user.py")

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import psycopg2
 import os
-from linebot import line_bot_api
+from linebot import LineBotApi
 from linebot.models import TextSendMessage
 
 DATABASE_URL = os.environ['DATABASE_URL']
@@ -31,6 +31,8 @@ if __name__ == "__main__":
         else:
             lazy_users[user] = max(lazy_users[user], time)
 
+    channel_access_token = os.getenv('LINE_CHANNEL_ACCESS_TOKEN', None)
+    line_bot_api = LineBotApi(channel_access_token)
     base_text = "あなたが最後に練習した時間は "
     for user, time in lazy_users.items():
         line_bot_api.push_message(

@@ -98,7 +98,7 @@ def callback():
             with get_connection() as conn:
                 conn.autocommit = True
                 with conn.cursor() as cur:
-                    cursor.execute(sql)
+                    cur.execute(sql)
 
             line_bot_api.reply_message(
                 event.reply_token,

@@ -45,6 +45,7 @@ if channel_access_token is None:
 
 line_bot_api = LineBotApi(channel_access_token)
 parser = WebhookParser(channel_secret)
+handler = WebhookHandler(channel_secret)
 
 DATABASE_URL = os.environ['DATABASE_URL']
 DB_NAME = "test_table"
@@ -84,6 +85,34 @@ def updatePracticeData(user_id, text):
     return
 
 
+def returnListMessage(user_id, text):
+    sql = 'select * from ' + DB_NAME + ' where user_id = %(target_id)s'
+    with get_connection() as conn:
+        conn.autocommit = True
+        with conn.cursor() as cur:
+            cur.execute(sql, {'target_id': (user_id,)})
+            results = cur.fetchall()
+
+    if len(results) == 0:
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text="登録がありません。")
+        )
+        return
+
+    ans = ''
+    for result in results:
+        _, piece, time = result
+        ans += piece + " を最後に練習したのは\n"
+        ans += str(time) + " です。\n\n"
+
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=ans)
+    )
+    return
+
+
 @app.route("/callback", methods=['POST'])
 def callback():
     signature = request.headers['X-Line-Signature']
@@ -104,50 +133,33 @@ def callback():
             continue
         if not isinstance(event.message, TextMessage):
             continue
-
-        if event.message.text in ["リスト", "list"]:
-            sql = 'select * from ' + DB_NAME + ' where user_id = %(target_id)s'
-            with get_connection() as conn:
-                conn.autocommit = True
-                with conn.cursor() as cur:
-                    cur.execute(sql, {'target_id': (event.source.user_id,)})
-                    results = cur.fetchall()
-
-            if len(results) == 0:
-                line_bot_api.reply_message(
-                    event.reply_token,
-                    TextSendMessage(text="登録がありません。")
-                )
-                return
-
-            ans = ''
-            for result in results:
-                _, piece, time = result
-                ans += piece + " を最後に練習したのは\n"
-                ans += str(time) + " です。\n\n"
-
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text=ans)
-            )
-            return
-
-        user_id = event.source.user_id
-        text = event.message.text
-        is_data = countPracticeData(user_id, text) > 0
-        if is_data is True:
-            updatePracticeData(user_id, text)
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text="時刻を更新しました。")
-            )
         else:
-            insertPracticeData(user_id, text)
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text="登録しました。")
-            )
+            handler.handle(body, signature)
 
+
+@handler.add(MessageEvent, message=TextMessage)
+def handle_message(event):
+    user_id = event.source.user_id
+    text = event.message.text
+    if event.message.text in ["リスト", "list"]:
+        returnListMessage(user_id, text)
+        return 'OK'
+
+    user_id = event.source.user_id
+    text = event.message.text
+    is_data = countPracticeData(user_id, text) > 0
+    if is_data is True:
+        updatePracticeData(user_id, text)
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text="時刻を更新しました。")
+        )
+    else:
+        insertPracticeData(user_id, text)
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text="登録しました。")
+        )
     return 'OK'
 
 

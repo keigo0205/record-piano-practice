@@ -54,6 +54,16 @@ def get_connection():
     return psycopg2.connect(DATABASE_URL, sslmode='require')
 
 
+def countPracticeData(user_id, text):
+    sql = "SELECT count(user_id = '" + user_id + "',message = '" + text + "') from " + DB_NAME
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql)
+            results = cur.fetchall()
+    print(results)
+    return
+
+
 @app.route("/callback", methods=['POST'])
 def callback():
     signature = request.headers['X-Line-Signature']
@@ -102,7 +112,10 @@ def callback():
             )
 
         else:
-            sql = "INSERT INTO " + DB_NAME + " VALUES ('" + event.source.user_id + "','" + event.message.text + "',current_timestamp)"
+            user_id = event.source.user_id
+            text = event.message.text
+            is_data = countPracticeData(user_id, text) > 0
+            sql = "INSERT INTO " + DB_NAME + " VALUES ('" + user_id + "','" + event.message.text + "',current_timestamp)"
             with get_connection() as conn:
                 conn.autocommit = True
                 with conn.cursor() as cur:

@@ -72,7 +72,7 @@ def callback():
             event.reply_token,
             TextSendMessage(text="11")
         )
-        line_bot_api.reply_message(
+        line_bot_api.push_message(
             event.source.user_id,
             TextSendMessage(text="22")
         )

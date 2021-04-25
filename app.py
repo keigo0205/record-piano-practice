@@ -94,23 +94,15 @@ def returnListMessage(user_id, text):
             results = cur.fetchall()
 
     if len(results) == 0:
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text="登録がありません。")
-        )
-        return
+        return "登録がありません。"
 
-    ans = ''
+    ret = ''
     for result in results:
         _, piece, time = result
-        ans += piece + " を最後に練習したのは\n"
-        ans += str(time) + " です。\n\n"
+        ret += piece + " を最後に練習したのは\n"
+        ret += str(time) + " です。\n\n"
 
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=ans)
-    )
-    return
+    return ret
 
 
 @app.route("/callback", methods=['POST'])
@@ -142,7 +134,11 @@ def handle_message(event):
     user_id = event.source.user_id
     text = event.message.text
     if event.message.text in ["リスト", "list"]:
-        returnListMessage(user_id, text)
+        list_message = getListMessage(user_id, text)
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=list_message)
+        )
         return 'OK'
 
     user_id = event.source.user_id

@@ -85,7 +85,7 @@ def updatePracticeData(user_id, text):
     return
 
 
-def returnListMessage(user_id, text):
+def getListMessage(user_id, text):
     sql = 'select * from ' + DB_NAME + ' where user_id = %(target_id)s'
     with get_connection() as conn:
         conn.autocommit = True

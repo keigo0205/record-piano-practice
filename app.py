@@ -75,7 +75,7 @@ def insertPracticeData(user_id, text):
 def updatePracticeData(user_id, text):
     sql = """
     UPDATE %s SET last_practice_date = current_timestamp
-    WHERE user_id = %s and message = %s
+    WHERE user_id = '%s' and message = '%s'
     """ % (DB_NAME, user_id, text)
     with get_connection() as conn:
         conn.autocommit = True

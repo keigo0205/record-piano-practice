@@ -35,7 +35,7 @@ if __name__ == "__main__":
     channel_access_token = os.getenv('LINE_CHANNEL_ACCESS_TOKEN', None)
     line_bot_api = LineBotApi(channel_access_token)
     now = datetime.now()
-    base_delta = timedelta(seconds=24)
+    base_delta = timedelta(hours=24)
     base_text = "最後に練習してから24時間以上経過しています。\n"
     base_text += "最後に練習した時間は "
     for user, time in lazy_users.items():

@@ -86,6 +86,7 @@ def callback():
             print(event.message.text)
             sql = "INSERT INTO " + DB_NAME + " VALUES ('" + event.source.user_id + "','" + event.message.text + "',current_timestamp)"
             cursor.execute(sql)
+            conn.commit()
             line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text="登録しました")

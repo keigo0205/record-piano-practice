@@ -77,7 +77,7 @@ def callback():
             continue
 
         if event.message.text in ["リスト", "list"]:
-            sql = 'select * from ' + DB_NAME + ' where id = %(target_id)s'
+            sql = 'select * from ' + DB_NAME + ' where user_id = %(target_id)s'
             cursor.execute(sql, {'target_id': (event.source.user_id,)})
             results = cursor.fetchall()
             print(results)

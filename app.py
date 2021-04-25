@@ -80,7 +80,16 @@ def callback():
             sql = 'select * from ' + DB_NAME + ' where user_id = %(target_id)s'
             cursor.execute(sql, {'target_id': (event.source.user_id,)})
             results = cursor.fetchall()
-            print(results)
+            ans = ''
+            for result in results:
+                _, piece, time = result
+                ans += piece + " を最後に練習したのは\n"
+                ans += str(time) + " です。\n\n"
+                line_bot_api.reply_message(
+                    event.reply_token,
+                    TextSendMessage(text=ans)
+                )
+
         else:
             print(event.source.user_id)
             print(event.message.text)

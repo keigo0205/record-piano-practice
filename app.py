@@ -84,7 +84,7 @@ def callback():
         else:
             print(event.source.user_id)
             print(event.message.text)
-            sql = "INSERT INTO " + DB_NAME + " (user_id,message) VALUES ('" + event.source.user_id + "','" + event.message.text + "',current_timestamp)"
+            sql = "INSERT INTO " + DB_NAME + " VALUES ('" + event.source.user_id + "','" + event.message.text + "',current_timestamp)"
             cursor.execute(sql)
             line_bot_api.reply_message(
                 event.reply_token,

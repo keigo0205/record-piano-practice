@@ -55,7 +55,7 @@ def get_connection():
 
 
 def countPracticeData(user_id, text):
-    sql = "SELECT count(user_id = '" + user_id + "',message = '" + text + "') from " + DB_NAME
+    sql = "SELECT count(user_id = '" + user_id + "' and message = '" + text + "' or NULL ) from " + DB_NAME
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute(sql)

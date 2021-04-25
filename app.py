@@ -49,7 +49,7 @@ parser = WebhookParser(channel_secret)
 
 DATABASE_URL = os.environ['DATABASE_URL']
 
-conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+connection = psycopg2.connect(DATABASE_URL, sslmode='require')
 cursor = connection.cursor()
 
 DB_NAME = "test_table"

@@ -147,12 +147,8 @@ def handle_message(event):
     user_id = event.source.user_id
     text = event.message.text
     if text in ["リスト", "list"]:
-        list_message = getListMessage(user_id, text)
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=list_message)
-        )
-        return 'OK'
+        ret_message = getListMessage(user_id, text)
+
     elif len(text) > 3 and text[:4] == "del ":
         message = text[4:]
         if countPracticeData(user_id, text) == 0:
@@ -160,24 +156,18 @@ def handle_message(event):
         else:
             deletePracticeData(user_id, message)
             ret_message = "データを消去しました。"
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=ret_message)
-        )
 
-    is_data = countPracticeData(user_id, text) > 0
-    if is_data is True:
+    elif countPracticeData(user_id, text) > 0:
         updatePracticeData(user_id, text)
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text="時刻を更新しました。")
-        )
+        ret_message = "時刻を更新しました。"
     else:
         insertPracticeData(user_id, text)
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text="登録しました。")
-        )
+        ret_message = "登録しました。"
+
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(ret_message)
+    )
     return 'OK'
 
 

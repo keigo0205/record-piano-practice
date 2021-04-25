@@ -50,7 +50,7 @@ parser = WebhookParser(channel_secret)
 DATABASE_URL = os.environ['DATABASE_URL']
 
 connection = psycopg2.connect(DATABASE_URL, sslmode='require')
-cursor = connection.cursor()
+# cursor = connection.cursor()
 
 DB_NAME = "test_table"
 
@@ -78,8 +78,11 @@ def callback():
 
         if event.message.text in ["リスト", "list"]:
             sql = 'select * from ' + DB_NAME + ' where user_id = %(target_id)s'
-            cursor.execute(sql, {'target_id': (event.source.user_id,)})
-            results = cursor.fetchall()
+            with get_connection() as conn:
+                conn.autocommit = True
+                with conn.cursor() as cur:
+                    cur.execute(sql, {'target_id': (event.source.user_id,)})
+                    results = cur.fetchall()
             ans = ''
             for result in results:
                 _, piece, time = result
@@ -93,8 +96,11 @@ def callback():
 
         else:
             sql = "INSERT INTO " + DB_NAME + " VALUES ('" + event.source.user_id + "','" + event.message.text + "',current_timestamp)"
-            cursor.execute(sql)
-            conn.commit()
+            with get_connection() as conn:
+                conn.autocommit = True
+                with conn.cursor() as cur:
+                    cursor.execute(sql)
+
             line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text="登録しました")

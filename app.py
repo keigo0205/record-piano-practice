@@ -82,6 +82,14 @@ def callback():
                 with conn.cursor() as cur:
                     cur.execute(sql, {'target_id': (event.source.user_id,)})
                     results = cur.fetchall()
+
+            if len(results) == 0:
+                line_bot_api.reply_message(
+                    event.reply_token,
+                    TextSendMessage(text="登録がありません。")
+                )
+                return
+
             ans = ''
             for result in results:
                 _, piece, time = result
